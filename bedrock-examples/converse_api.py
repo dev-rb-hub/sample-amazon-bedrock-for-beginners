@@ -2,8 +2,9 @@ import boto3
 import json
 
 def use_converse_api():
-    bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1')
-    model_id = "us.amazon.nova-lite-v1:0"
+    bedrock_runtime = boto3.client('bedrock-runtime', region_name='ap-southeast-2')
+    # model_id = "us.amazon.nova-lite-v1:0"
+    model_id = "apac.amazon.nova-lite-v1:0" #"au.anthropic.claude-haiku-4-5-20251001-v1:0" #"apac.amazon.nova-lite-v1:0"
 
     # Define a system prompt to set model behavior
     system_prompt = [

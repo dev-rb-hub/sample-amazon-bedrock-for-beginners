@@ -1,8 +1,8 @@
 import boto3
 
 def multi_turn_conversation():
-    bedrock_runtime = boto3.client('bedrock-runtime', region_name='us-east-1')
-    model_id = "us.amazon.nova-lite-v1:0"
+    bedrock_runtime = boto3.client('bedrock-runtime', region_name='ap-southeast-2')
+    model_id = "apac.amazon.nova-lite-v1:0"
 
     # System prompt sets the assistant's behavior
     system_prompt = [

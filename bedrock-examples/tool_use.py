@@ -92,8 +92,8 @@ def run_tool(tool_name, tool_input):
 
 def tool_use_demo():
     # Create the Bedrock client
-    bedrock = boto3.client("bedrock-runtime", region_name="us-east-1")
-    model_id = "us.amazon.nova-lite-v1:0"
+    bedrock = boto3.client("bedrock-runtime", region_name="ap-southeast-2")
+    model_id = "apac.amazon.nova-lite-v1:0"
 
     user_message = "What's the weather like in Seattle right now?"
 

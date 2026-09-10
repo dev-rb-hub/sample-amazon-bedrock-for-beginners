@@ -1,14 +1,18 @@
 import boto3
 
+# Use the exact profile name
+session = boto3.Session(profile_name='your_profile_name')
+s3 = session.client('s3')
+
 # REPLACE THESE with your actual IDs
 KNOWLEDGE_BASE_ID = ""
 GUARDRAIL_ID = ""
 GUARDRAIL_VERSION = "1"
-MODEL_ID = "us.amazon.nova-lite-v1:0"
+MODEL_ID = "apac.amazon.nova-lite-v1:0"
 
 
 def query_kb_with_guardrail(question):
-    bedrock_agent = boto3.client("bedrock-agent-runtime", region_name="us-east-1")
+    bedrock_agent = session.client("bedrock-agent-runtime", region_name="ap-southeast-2")
 
     print("Knowledge Base Query with Guardrail")
     print("=" * 60)

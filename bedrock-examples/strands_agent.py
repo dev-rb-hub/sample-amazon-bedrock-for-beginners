@@ -1,17 +1,28 @@
+import boto3
 import os
 from strands import Agent, tool
 from strands.models import BedrockModel
-from strands_tools import retrieve
+from strands.memory import MemoryManager
+from strands.memory.types import MemoryToolConfig
+from strands.vended_memory_stores import BedrockKnowledgeBaseStore
+#from strands_tools import retrieve
 
 # ============================================================
 # Configuration — Replace these with your resource IDs
 # ============================================================
 
 KNOWLEDGE_BASE_ID = ""
+DATASOURCE_ID = ""
 GUARDRAIL_ID = ""
 GUARDRAIL_VERSION = "1"
-MODEL_ID = "us.amazon.nova-lite-v1:0"
-REGION = "us-east-1"
+MODEL_ID = "apac.amazon.nova-lite-v1:0"
+REGION = "ap-southeast-2"
+
+# Use the exact profile name you created in Step 2
+session = boto3.Session(profile_name='personal-profile-name', region_name="ap-southeast-2")
+s3 = session.client('s3')
+bedrock_agent_runtime = session.client("bedrock-agent-runtime")
+bedrock_agent = session.client("bedrock-agent")
 
 
 # ============================================================
@@ -104,7 +115,7 @@ def create_university_agent():
 
     bedrock_model = BedrockModel(
         model_id=MODEL_ID,
-        region_name=REGION,
+        boto_session=session,
         temperature=0.3,
         max_tokens=2000,
         guardrail_id=GUARDRAIL_ID,
@@ -125,10 +136,39 @@ Guidelines:
 - If you don't know the answer, say so and suggest they contact the relevant office.
 - Keep answers concise and helpful."""
 
+    # 1. Define the knowledge base as a read-only memory store
+    kb_store = BedrockKnowledgeBaseStore(
+        name="company_knowledge",
+        description="Use this to look up internal documentation and architecture guidelines.",
+        writable=False,  # As recommended by the warning
+        config={
+            "knowledge_base_id": KNOWLEDGE_BASE_ID,
+            "data_source_type": "S3", # Or your specific data source type
+            "data_source_id": DATASOURCE_ID,
+            "region_name": REGION,
+            "agent_client": bedrock_agent,
+            "runtime_client": bedrock_agent_runtime,
+        }
+    )
+
     agent = Agent(
-        model=bedrock_model,
-        tools=[retrieve, lookup_course],
+        model=bedrock_model,  # Your configured BedrockModel instance        
         system_prompt=system_prompt,
+        callback_handler=None,
+    
+        # Keep your custom non-memory tools here
+        tools=[lookup_course], 
+
+        memory_manager=MemoryManager(
+            stores=[kb_store],
+        
+            # Configure the tool the agent uses to LOOK UP things it remembers
+            search_tool_config=MemoryToolConfig(
+                name="retrieve",  # Keeps the name identical if your system prompt references 'retrieve'
+                description="Look up internal documentation, policy guides, and university data."
+            ),
+            
+        )
     )
 
     return agent

@@ -1,14 +1,18 @@
 import boto3
 from botocore.config import Config
 
+# Use the exact profile name
+session = boto3.Session(profile_name='your_profile_name')
+s3 = session.client('s3')
+
 # REPLACE THIS with your Knowledge Base ID
 KNOWLEDGE_BASE_ID = ""  # Example: "ABCDEFGHIJ"
 
 # REPLACE THIS with your model ID 
-MODEL_ID = "us.amazon.nova-lite-v1:0"
+MODEL_ID = "apac.amazon.nova-lite-v1:0"
 
 def query_knowledge_base(question):
-    bedrock_agent_runtime = boto3.client('bedrock-agent-runtime', region_name='us-east-1')
+    bedrock_agent_runtime = session.client('bedrock-agent-runtime', region_name='ap-southeast-2')
 
     print("Querying Bedrock Knowledge Base")
     print("=" * 60)
