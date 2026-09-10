@@ -7,7 +7,7 @@ with open("GitHub_Button.jpg", "rb") as f:
     image_bytes = f.read()  
 
 response = client.converse( 
-    modelId="us.anthropic.claude-haiku-4-5-20251001-v1:0", 
+    modelId="au.anthropic.claude-haiku-4-5-20251001-v1:0", 
     messages=[{ 
         "role": "user", 
         "content": [ 
